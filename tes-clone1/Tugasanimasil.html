@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Drone - Adelia Hafsani</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            /* Palette Cosmic Nebula */
+            --bg-deep: #0a0a2a;      
+            --nebula-pink: #d946ef;  
+            --nebula-blue: #3b82f6;  
+            --nebula-purple: #8b5cf6;
+            
+            --text-main: #f8fafc;
+            --text-muted: #cbd5e1;
+            
+            --glass-bg: rgba(15, 23, 42, 0.45);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --glow-pink: rgba(217, 70, 239, 0.5);
+            --glow-blue: rgba(59, 130, 246, 0.5);
+        }
+
+        /* --- BACKGROUND GRADASI BERGERAK --- */
+        body {
+            margin: 0; padding: 0;
+            background: linear-gradient(135deg, #050515, #1e0b36, #091c40, #2d0b2f);
+            background-size: 400% 400%;
+            animation: cosmicGradientMove 15s ease infinite;
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        @keyframes cosmicGradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .cosmic-nebula {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 0;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(217, 70, 239, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(59, 130, 246, 0.15) 0%, transparent 40%);
+            animation: nebulaPulse 10s ease-in-out infinite alternate;
+            pointer-events: none;
+        }
+        @keyframes nebulaPulse {
+            0% { opacity: 0.6; transform: scale(1); }
+            100% { opacity: 1; transform: scale(1.1); }
+        }
+
+        .stars-layer { position: absolute; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+        .star-static {
+            position: absolute; background: white; border-radius: 50%; opacity: 0; 
+            animation: twinkle var(--dur) ease-in-out infinite alternate;
+        }
+        @keyframes twinkle {
+            0%, 20% { opacity: 0; transform: scale(0.5); box-shadow: none; }
+            50% { opacity: 1; transform: scale(1.2); box-shadow: 0 0 8px white; }
+            80%, 100% { opacity: 0; transform: scale(0.5); box-shadow: none; }
+        }
+
+        .blackhole-container {
+            position: absolute;
+            top: -15%; right: -15%; 
+            width: 1000px; height: 1000px;
+            z-index: 0; pointer-events: none;
+            display: flex; justify-content: center; align-items: center;
+            animation: floatBh 20s ease-in-out infinite alternate;
+        }
+
+        @keyframes floatBh {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(30px); }
+        }
+
+        .bh-glow {
+            position: absolute; width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, rgba(180,210,255,0.15) 30%, transparent 65%);
+            z-index: 1;
+        }
+
+        .bh-sphere {
+            position: absolute; width: 300px; height: 300px;
+            background: #000; border-radius: 50%;
+            box-shadow: inset 0 0 30px rgba(255,255,255,0.4), 0 0 60px rgba(255,255,255,0.7);
+            z-index: 3;
+        }
+
+        .bh-ring-tilt {
+            position: absolute; width: 1000px; height: 1000px;
+            transform: scaleY(0.18) rotate(-15deg);
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        .bh-ring-back-wrap {
+            position: absolute; width: 100%; height: 100%;
+            clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%); z-index: 2;
+        }
+
+        .bh-ring-front-wrap {
+            position: absolute; width: 100%; height: 100%;
+            clip-path: polygon(0 50%, 100% 50%, 100% 100%, 0 100%); z-index: 4;
+        }
+
+        .bh-spin-ring {
+            position: absolute; width: 100%; height: 100%; border-radius: 50%; box-sizing: border-box;
+            border: 30px solid transparent;
+            border-top: 30px solid rgba(255,255,255,0.9);
+            border-bottom: 30px solid rgba(255,255,255,0.5);
+            border-left: 30px solid rgba(139, 92, 246, 0.4);
+            border-right: 30px solid rgba(59, 130, 246, 0.4);
+            box-shadow: 0 0 60px rgba(255,255,255,0.6), inset 0 0 60px rgba(255,255,255,0.6);
+            animation: ringSpin 6s linear infinite;
+        }
+
+        @keyframes ringSpin {
+            100% { transform: rotate(360deg); }
+        }
+
+        .meteor {
+            position: absolute; z-index: 1; opacity: 0; color: rgba(255, 255, 255, 0.6);
+            filter: drop-shadow(0 0 10px var(--nebula-blue)); animation: shootingMeteor 12s linear infinite;
+        }
+        @keyframes shootingMeteor {
+            0% { transform: translate(100vw, -20vh) rotate(210deg) scale(1); opacity: 0; }
+            5% { opacity: 1; }
+            15% { transform: translate(-20vw, 80vh) rotate(210deg) scale(0.6); opacity: 0; }
+            100% { opacity: 0; transform: translate(-20vw, 80vh) rotate(210deg); }
+        }
+
+        .author-tag { 
+            background: var(--glass-bg); backdrop-filter: blur(10px);
+            padding: 10px 25px; border-radius: 30px; border: 1px solid var(--glass-border); 
+            font-size: 0.85rem; font-family: 'Orbitron', sans-serif; letter-spacing: 1px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5); z-index: 100; position: fixed; top: 25px; left: 25px;
+        }
+
+        .slide {
+            position: absolute; width: 90%; max-width: 1000px; text-align: center;
+            opacity: 0; transform: translateY(30px) scale(0.95);
+            transition: all 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+            pointer-events: none;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 10; padding: 40px; 
+            padding-bottom: 150px; 
+            box-sizing: border-box; 
+            max-height: 100vh; 
+            overflow-y: auto; 
+        }
+        
+        .slide::-webkit-scrollbar { display: none; }
+        .slide { -ms-overflow-style: none; scrollbar-width: none; }
+        .slide.active { opacity: 1; transform: translateY(0) scale(1); pointer-events: all; }
+
+        h1, h2, h3 { font-family: 'Orbitron', sans-serif; text-transform: uppercase; margin-bottom: 20px; }
+        h1 {
+            font-size: 3.5rem; font-weight: 900;
+            background: linear-gradient(135deg, #fff, var(--nebula-pink), var(--nebula-blue));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 4px 15px var(--glow-pink));
+            letter-spacing: 2px; margin-bottom: 10px; text-shadow: 0 0 20px rgba(255,255,255,0.3);
+        }
+        h2 { font-size: 2rem; color: #fff; text-shadow: 0 0 15px var(--glow-blue); letter-spacing: 1px; }
+        .subtitle { font-size: 1.2rem; color: var(--text-muted); font-weight: 300; margin-bottom: 30px; letter-spacing: 1px; }
+
+        .highlight-box {
+            background: rgba(10, 15, 35, 0.75); backdrop-filter: blur(20px); border: 1px solid rgba(59, 130, 246, 0.4);
+            padding: 50px; border-radius: 30px; box-shadow: 0 0 40px rgba(59, 130, 246, 0.4), inset 0 0 20px rgba(217, 70, 239, 0.2);
+            width: 100%; max-width: 800px;
+        }
+
+        .scenario-box {
+            background: var(--glass-bg); backdrop-filter: blur(12px); border: 1px solid var(--glass-border);
+            padding: 35px; border-radius: 20px; font-size: 1.1rem; line-height: 1.8; text-align: left;
+            position: relative; width: 100%; box-shadow: inset 0 0 20px rgba(255,255,255,0.02), 0 15px 30px rgba(0,0,0,0.5);
+        }
+        .scenario-box::before { content:''; position:absolute; top:-1px; left:-1px; width:30px; height:30px; border-top:3px solid var(--nebula-pink); border-left:3px solid var(--nebula-pink); border-radius: 20px 0 0 0; }
+        .scenario-box::after { content:''; position:absolute; bottom:-1px; right:-1px; width:30px; height:30px; border-bottom:3px solid var(--nebula-blue); border-right:3px solid var(--nebula-blue); border-radius: 0 0 20px 0; }
+
+        .fragment { opacity: 0; transform: translateY(20px); transition: all 0.5s ease; }
+        .fragment.visible { opacity: 1; transform: translateY(0); }
+
+        .diagram-container { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; margin-top: 20px;}
+        
+        .box {
+            background: rgba(255, 255, 255, 0.05); border: 2px solid var(--nebula-pink);
+            padding: 15px 30px; border-radius: 12px; 
+            min-width: 200px; 
+            backdrop-filter: blur(5px); box-shadow: 0 0 15px var(--glow-pink);
+            position: relative; cursor: pointer; transition: 0.3s;
+        }
+        .box-subclass { border-color: var(--nebula-blue); box-shadow: 0 0 15px var(--glow-blue); }
+        .box:hover, .flow-step:hover { transform: scale(1.05); z-index: 20; }
+
+        .lines { display: flex; width: 100%; max-width: 650px; justify-content: space-between; position: relative; height: 30px; margin: 0 auto; }
+        .lines::before { content: ''; position: absolute; top: 0; left: 16%; right: 16%; height: 2px; background: rgba(255,255,255,0.4); }
+        .line-down { width: 2px; height: 100%; background: rgba(255,255,255,0.4); margin: 0 auto; }
+        
+        .subclass-row { 
+            display: flex; gap: 20px; justify-content: center; width: 100%; 
+            flex-wrap: nowrap; 
+        }
+
+        /* --- FLOWCHART STYLE --- */
+        .flowchart-wrap {
+            display: flex; flex-direction: column; align-items: center; 
+            gap: 5px; margin-top: -10px; padding: 10px 0;
+        }
+
+        .flow-step {
+            background: var(--glass-bg); backdrop-filter: blur(10px); border: 1px solid var(--glass-border);
+            border-radius: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            position: relative; cursor: pointer; transition: 0.3s;
+            display: flex; justify-content: center; align-items: center; text-align: center;
+            font-size: 0.9rem; line-height: 1.2; padding: 8px 20px; min-width: 280px; 
+        }
+
+        .flow-step:first-of-type, 
+        .flow-step:last-of-type {
+            border-radius: 50px; padding: 12px 35px;
+        }
+
+        .flow-step:nth-of-type(3) {
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            padding: 30px 50px; 
+            font-size: 0.85rem; 
+            min-width: 320px; 
+            min-height: 100px;
+        }
+        .flow-step:nth-of-type(3) .popup-text { bottom: 120%; }
+
+        .flow-step:nth-of-type(5),
+        .flow-step:nth-of-type(7) {
+            border-radius: 0;
+            border-left: 4px solid var(--nebula-pink);
+            padding: 10px 25px;
+        }
+
+        .flow-arrow { color: var(--nebula-pink); font-size: 1.4rem; margin: 2px 0; text-shadow: 0 0 10px var(--glow-pink); }
+
+        /* --- TAMBAHAN UNTUK NGECEILIN FLOWCHART BANGET (OVERRIDE) --- */
+        /* Kode ini ditambahkan untuk mengecilkan tampilan khusus di Slide 3 */
+        #slide3 .flowchart-wrap { gap: 2px; transform: scale(0.85); margin-top: -20px; }
+        #slide3 .flow-step { min-width: 180px; font-size: 0.7rem; padding: 6px 15px; }
+        #slide3 .flow-step:nth-of-type(3) { min-width: 200px; min-height: 70px; padding: 15px 30px; font-size: 0.65rem; }
+        #slide3 .flow-arrow { font-size: 1rem; margin: 0; }
+        /* ------------------------------------------------------------- */
+
+        .benefits-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; width: 100%; margin-top: 15px; }
+        .benefit-card {
+            background: var(--glass-bg); backdrop-filter: blur(12px); border: 1px solid var(--glass-border);
+            padding: 25px; border-radius: 15px; display: flex; align-items: flex-start; text-align: left;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3); transition: transform 0.3s;
+        }
+        .benefit-card:hover { transform: translateY(-5px); border-color: var(--nebula-blue); box-shadow: 0 15px 35px var(--glow-blue); }
+        .benefit-card i { font-size: 2.2rem; color: var(--nebula-blue); margin-right: 20px; text-shadow: 0 0 15px var(--glow-blue); margin-top: 5px; }
+        .benefit-title { font-family: 'Orbitron', sans-serif; font-size: 1.15rem; color: #fff; letter-spacing: 1px; display: block; margin-bottom: 8px; }
+        .benefit-desc { margin: 0; color: var(--text-muted); font-size: 0.95rem; line-height: 1.5; }
+
+        .popup-text {
+            position: absolute; bottom: 115%; left: 50%; transform: translateX(-50%) translateY(10px);
+            background: rgba(10, 10, 30, 0.95); border: 1px solid var(--nebula-blue); 
+            color: #fff; padding: 12px 20px; border-radius: 10px; font-size: 0.85rem; line-height: 1.5;
+            width: 260px; box-shadow: 0 0 25px rgba(59, 130, 246, 0.5);
+            opacity: 0; visibility: hidden; transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 100; pointer-events: none; text-transform: none; font-family: 'Inter', sans-serif; font-weight: 400; letter-spacing: normal; text-align: center;
+        }
+        .popup-text::after {
+            content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+            border-width: 8px; border-style: solid; border-color: var(--nebula-blue) transparent transparent transparent;
+        }
+        .active-popup .popup-text { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+
+        .nav-container {
+            position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 25px; z-index: 100; width: 100%; justify-content: center;
+        }
+        .hologram-btn {
+            font-family: 'Orbitron', sans-serif; font-size: 0.85rem; font-weight: 700; letter-spacing: 2px;
+            background: rgba(10, 10, 42, 0.8); border: 1px solid var(--nebula-blue); color: #fff;
+            padding: 15px 35px; border-radius: 5px; cursor: pointer; backdrop-filter: blur(10px);
+            transition: all 0.3s ease; box-shadow: 0 0 15px rgba(59, 130, 246, 0.3); text-transform: uppercase;
+        }
+        .hologram-btn:hover { background: var(--nebula-blue); color: #fff; box-shadow: 0 0 25px var(--glow-blue); transform: translateY(-2px); }
+        .btn-prev { border-color: var(--nebula-pink); box-shadow: 0 0 15px rgba(217, 70, 239, 0.3); }
+        .btn-prev:hover { background: var(--nebula-pink); box-shadow: 0 0 25px var(--glow-pink); }
+        
+        body, html {
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="%233b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4" stroke="%23d946ef"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg>') 14 14, auto;
+        }
+        .box, .flow-step, button {
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="%23d946ef" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4" fill="%233b82f6" stroke="%233b82f6"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg>') 14 14, pointer !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="cosmic-nebula"></div>
+    <div class="stars-layer" id="starsContainer"></div>
+
+    <div class="blackhole-container">
+        <div class="bh-glow"></div>
+        <div class="bh-ring-tilt">
+            <div class="bh-ring-back-wrap"><div class="bh-spin-ring"></div></div>
+            <div class="bh-ring-front-wrap"><div class="bh-spin-ring"></div></div>
+        </div>
+        <div class="bh-sphere"></div>
+    </div>
+
+    <i class="fas fa-meteor meteor" style="font-size: 3rem; animation-delay: 2s;"></i>
+    <i class="fas fa-meteor meteor" style="font-size: 2rem; animation-delay: 7s; top: 10%; right: 10%;"></i>
+
+    <div class="author-tag">
+        <i class="fas fa-user-astronaut" style="color: var(--nebula-pink); margin-right: 8px;"></i> 
+        Adelia Hafsani <span style="color: var(--text-muted); font-family: 'Inter';">| F5512520054</span>
+    </div>
+
+    <div class="slide active" id="slide0">
+        <div class="highlight-box">
+            <h1>Sistem Drone<br>Penjelajah</h1>
+            <p class="subtitle">Misi Eksplorasi Menggunakan Konsep Inheritance (OOP)</p>
+            <div style="margin-top: 30px; display: inline-flex; align-items: center; gap: 10px; font-family:'Orbitron'; font-size: 0.85rem; color: var(--nebula-blue); border: 1px solid rgba(59, 130, 246, 0.3); padding: 8px 20px; border-radius: 50px; background: rgba(0,0,0,0.5);">
+                <div style="width: 8px; height: 8px; background: var(--nebula-blue); border-radius: 50%; box-shadow: 0 0 10px var(--nebula-blue); animation: twinkle 1s infinite alternate;"></div>
+                SYSTEM STATUS: ONLINE
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="slide1">
+        <h2>Latar Belakang</h2>
+        <div class="scenario-box">
+            <p class="fragment mb-4"><i class="fas fa-space-shuttle" style="color: var(--nebula-pink); margin-right: 10px; width: 25px;"></i> <strong style="color:white;">Skenario:</strong> Misi Planet X memerlukan drone spesifik (memindai, menambang, menganalisis atmosfir).</p>
+            <p class="fragment mb-4"><i class="fas fa-microchip" style="color: var(--nebula-blue); margin-right: 10px; width: 25px;"></i> <strong style="color:white;">Kesamaan:</strong> SEMUA jenis drone harus bisa melakukan fungsi dasar: <em>bergerak</em> dan <em>mengirim data</em>.</p>
+            <p class="fragment" style="color:#fca5a5; margin-top: 25px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);"><i class="fas fa-exclamation-triangle" style="margin-right: 10px;"></i> <strong style="color:#f87171;">Masalah:</strong> Menulis ulang blok kode yang sama untuk setiap jenis drone membuat program menjadi bengkak dan sulit diperbaiki.</p>
+        </div>
+    </div>
+
+    <div class="slide" id="slide2">
+        <h2>Solusi: Inheritance</h2>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: -15px; margin-bottom: 15px;"><i class="fas fa-info-circle text-blue-400"></i> Klik kotak untuk melihat detail</p>
+        <div class="diagram-container">
+            <div class="box fragment" onclick="togglePopup(this)">
+                <h3 style="margin:0; font-size: 1.1rem; color: #fff;"><i class="fas fa-server" style="color: var(--nebula-pink); margin-right: 10px;"></i>SUPERCLASS: Drone</h3>
+                <p style="font-size:0.95rem; margin:10px 0 5px 0; color: var(--text-muted); font-family: 'Inter';">Method: move(), sendData()</p>
+                <div class="popup-text">Menjadi "Cetak Biru" utama. Fungsi dasar cukup ditulis sekali di sini.</div>
+            </div>
+            <div class="fragment" style="width: 100%;">
+                <div class="line-down" style="height: 25px;"></div>
+                <div class="lines"><div class="line-down"></div><div class="line-down"></div><div class="line-down"></div></div>
+            </div>
+            <div class="subclass-row">
+                <div class="box box-subclass fragment" onclick="togglePopup(this)">
+                    <h4 style="margin:0; font-size:1rem; color: #fff;">ScoutDrone</h4>
+                    <p style="font-size:0.85rem; margin:8px 0 0 0; color: var(--text-muted);">+ scanArea()</p>
+                    <div class="popup-text">Mewarisi gerak dari Induk + alat pemindai radar khusus.</div>
+                </div>
+                <div class="box box-subclass fragment" onclick="togglePopup(this)">
+                    <h4 style="margin:0; font-size:1rem; color: #fff;">MinerDrone</h4>
+                    <p style="font-size:0.85rem; margin:8px 0 0 0; color: var(--text-muted);">+ collectMineral()</p>
+                    <div class="popup-text">Mewarisi gerak dari Induk + modul penambangan material.</div>
+                </div>
+                <div class="box box-subclass fragment" onclick="togglePopup(this)">
+                    <h4 style="margin:0; font-size:1rem; color: #fff;">WeatherDrone</h4>
+                    <p style="font-size:0.85rem; margin:8px 0 0 0; color: var(--text-muted);">+ analyzeAtm()</p>
+                    <div class="popup-text">Mewarisi gerak dari Induk + sensor analisis cuaca.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="slide3">
+        <h2>Flowchart Sistem</h2>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: -15px; margin-bottom: 10px;"><i class="fas fa-mouse-pointer text-pink-400"></i> Tap bentuk untuk info teknis</p>
+        
+        <div class="flowchart-wrap">
+            <div class="flow-step fragment" onclick="togglePopup(this)">
+                <span>START / Inisialisasi</span>
+                <div class="popup-text">Terminator: Menginisialisasi sistem utama mesin drone.</div>
+            </div>
+            <div class="flow-arrow fragment">↓</div>
+            
+            <div class="flow-step fragment" onclick="togglePopup(this)">
+                <span>PILIH DRONE SUBCLASS</span>
+                <div class="popup-text">Decision: Memilih tipe objek drone sesuai kebutuhan misi.</div>
+            </div>
+            <div class="flow-arrow fragment">↓</div>
+            
+            <div class="flow-step fragment" style="border-color: var(--nebula-pink);" onclick="togglePopup(this)">
+                <span>EKSEKUSI MISI SPESIFIK</span>
+                <div class="popup-text">Process: Menjalankan method unik milik subclass.</div>
+            </div>
+            <div class="flow-arrow fragment">↓</div>
+            
+            <div class="flow-step fragment" onclick="togglePopup(this)">
+                <span>KIRIM DATA (INHERITED)</span>
+                <div class="popup-text">Process: Memanggil method sendData() dari parent class.</div>
+            </div>
+            <div class="flow-arrow fragment">↓</div>
+            
+            <div class="flow-step fragment" style="border-color: rgba(255,255,255,0.5);" onclick="togglePopup(this)">
+                <span>MISSION END</span>
+                <div class="popup-text">Terminator: Misi selesai, objek masuk status standby.</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="slide4">
+        <h2>Keuntungan Inheritance</h2>
+        <div class="benefits-grid">
+            <div class="benefit-card fragment">
+                <i class="fas fa-recycle"></i>
+                <div><span class="benefit-title">Code Reuse</span><p class="benefit-desc">Metode dasar diwariskan, menghemat waktu penulisan kode.</p></div>
+            </div>
+            <div class="benefit-card fragment">
+                <i class="fas fa-tools"></i> 
+                <div><span class="benefit-title">Extension</span><p class="benefit-desc">Subclass bisa menambah fitur baru tanpa mengubah Superclass.</p></div>
+            </div>
+            <div class="benefit-card fragment">
+                <i class="fas fa-expand-arrows-alt"></i> 
+                <div><span class="benefit-title">Efficiency</span><p class="benefit-desc">Mengurangi duplikasi kode dan standarisasi proses.</p></div>
+            </div>
+            <div class="benefit-card fragment">
+                <i class="fas fa-sitemap"></i> 
+                <div><span class="benefit-title">Consistency</span><p class="benefit-desc">Semua subclass mengikuti struktur standar yang sama.</p></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="slide5">
+        <i class="fas fa-satellite-dish" style="font-size: 5rem; color: var(--nebula-blue); margin-bottom: 25px; filter: drop-shadow(0 0 20px var(--glow-blue));"></i>
+        <h1>Mission Complete</h1>
+        <p class="subtitle fragment" style="color: var(--text-main); font-size: 1.3rem;">Koneksi Terputus. Terima Kasih.</p>
+        <div style="font-family:'Orbitron'; font-size: 0.9rem; color:var(--nebula-pink); letter-spacing: 3px; margin-top: 20px;">[ TRANSMISSION END ]</div>
+    </div>
+
+    <div class="nav-container">
+        <button class="hologram-btn btn-prev" onclick="prevStep()"><i class="fas fa-chevron-left"></i> PREV</button>
+        <button class="hologram-btn" onclick="nextStep()">NEXT <i class="fas fa-chevron-right"></i></button>
+    </div>
+
+    <script>
+        const starsContainer = document.getElementById('starsContainer');
+        const numStars = 250; 
+        for (let i = 0; i < numStars; i++) {
+            let star = document.createElement('div');
+            star.className = 'star-static';
+            star.style.left = `${Math.random() * 100}%`;
+            star.style.top = `${Math.random() * 100}%`;
+            let size = Math.random() * 2 + 0.5;
+            star.style.width = `${size}px`; star.style.height = `${size}px`;
+            star.style.setProperty('--dur', `${Math.random() * 5 + 3}s`);
+            star.style.animationDelay = `${Math.random() * 5}s`;
+            starsContainer.appendChild(star);
+        }
+
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+
+        function nextStep() {
+            closeAllPopups();
+            const currentSlide = slides[currentSlideIndex];
+            const hiddenFragments = currentSlide.querySelectorAll('.fragment:not(.visible)');
+            if (hiddenFragments.length > 0) {
+                hiddenFragments[0].classList.add('visible');
+            } else if (currentSlideIndex < slides.length - 1) {
+                currentSlide.classList.remove('active');
+                currentSlideIndex++;
+                slides[currentSlideIndex].classList.add('active');
+            } else {
+                slides.forEach(s => {
+                    s.classList.remove('active');
+                    s.querySelectorAll('.fragment').forEach(f => f.classList.remove('visible'));
+                });
+                currentSlideIndex = 0;
+                slides[currentSlideIndex].classList.add('active');
+            }
+        }
+
+        function prevStep() {
+            closeAllPopups();
+            const currentSlide = slides[currentSlideIndex];
+            const visibleFragments = currentSlide.querySelectorAll('.fragment.visible');
+            if (visibleFragments.length > 0) {
+                visibleFragments[visibleFragments.length - 1].classList.remove('visible');
+            } else if (currentSlideIndex > 0) {
+                currentSlide.classList.remove('active');
+                currentSlideIndex--;
+                slides[currentSlideIndex].classList.add('active');
+                slides[currentSlideIndex].querySelectorAll('.fragment').forEach(f => f.classList.add('visible'));
+            }
+        }
+
+        function togglePopup(clickedElement) {
+            if(clickedElement.classList.contains('fragment') && !clickedElement.classList.contains('visible')) return;
+            document.querySelectorAll('.box, .flow-step').forEach(node => {
+                if(node !== clickedElement) node.classList.remove('active-popup');
+            });
+            clickedElement.classList.toggle('active-popup');
+        }
+
+        function closeAllPopups() {
+            document.querySelectorAll('.box, .flow-step').forEach(node => node.classList.remove('active-popup'));
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.box') && !e.target.closest('.flow-step')) closeAllPopups();
+        });
+    </script>
+</body>
+</html>
